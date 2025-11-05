@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+const mongoose = require('mongoose');
 
 const restaurantSchema = new mongoose.Schema(
   {
@@ -30,14 +30,8 @@ const restaurantSchema = new mongoose.Schema(
       type: Number, 
       default: 0 
     },
-    reviews: [
-      { 
-        type: mongoose.Schema.Types.ObjectId, 
-        ref: "Review" 
-      }
-    ],
   },
   { timestamps: true }
 );
 
-export default mongoose.model("Restaurant", restaurantSchema);
+module.exports = mongoose.model("Restaurant", restaurantSchema);

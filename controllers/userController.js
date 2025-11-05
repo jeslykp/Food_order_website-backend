@@ -4,7 +4,6 @@ const generateToken = require("../utils/generateToken");
 
 const register = async (req, res) => {
   const { username, email, password, role } = req.body || {};
-  console.log(username, email, password, role, "===============req");
 
   try {
     // Check if user already exists
@@ -54,7 +53,7 @@ const login = async (req, res) => {
     if (!match) return res.status(400).json({ message: "Invalid password" });
 
     //Generate token
-    const token = generateToken(user._id, "user");
+    const token = generateToken(user._id, user.role);
     res.cookie("token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",

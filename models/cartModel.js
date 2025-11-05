@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+const mongoose = require("mongoose");
 
 const cartItemSchema = new mongoose.Schema({
   menuItem: { type: mongoose.Schema.Types.ObjectId, ref: "MenuItem", required: true },
@@ -18,4 +18,4 @@ const cartSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export default mongoose.model("Cart", cartSchema);
+module.exports = mongoose.model("Cart", cartSchema);

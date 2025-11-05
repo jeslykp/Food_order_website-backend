@@ -1,14 +1,17 @@
 const express = require("express");
+const {
+  getRestaurantReviews,
+  createReview,
+  deleteReview,
+} = require("../controllers/reviewController");
+const authUser = require("../middlewares/authUser");
 
 const reviewRouter = express.Router();
 
-reviewRouter.get("/restaurants/:restaurantId/reviews", getRestaurantReviews);
+reviewRouter.get("/:restaurantId",authUser, getRestaurantReviews);
 
-reviewRouter.post(
-  "/restaurants/:restaurantId/reviews",
-  createReview
-);
+reviewRouter.post("/:restaurantId", authUser,createReview);
 
-reviewRouter.delete("/reviews/:id", deleteReview);
+reviewRouter.delete("/:id",authUser, deleteReview);
 
 module.exports = reviewRouter;

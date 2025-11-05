@@ -1,12 +1,24 @@
 const express = require("express");
+const {
+  getAllMenuItems,
+  getMenuItemById,
+  createMenuItem,
+  updateMenuItem,
+  deleteMenuItem,
+  getMenuItemsByRestaurant,
+} = require("../controllers/menuController.js");
+const authAdmin = require("../middlewares/authAdmin");
+const upload = require("../middlewares/multer.js");
 
 const menuRouter = express.Router();
 
-menuRouter.get("/api/menus", getAllMenuItems);
-menuRouter.get("/api/menus/:id", getMenuItemById);
+menuRouter.get("/restaurant/:restaurantId", getMenuItemsByRestaurant);
+menuRouter.get("/:id", getMenuItemById);
 
-menuRouter.post("/api/menus", createMenuItem);
-menuRouter.put("/api/menus/:id", updateMenuItem);
-menuRouter.delete("/api/menus/:id", deleteMenuItem);
+menuRouter.post("/add", authAdmin, upload.single("image"), createMenuItem);
+menuRouter.put("/:id", authAdmin, updateMenuItem);
+menuRouter.get("/", authAdmin, getAllMenuItems);
+
+menuRouter.delete("/:id", authAdmin, deleteMenuItem);
 
 module.exports = menuRouter;

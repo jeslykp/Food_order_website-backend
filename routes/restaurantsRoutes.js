@@ -1,14 +1,17 @@
 const express = require("express");
+const authAdmin = require("../middlewares/authAdmin");
+const upload = require("../middlewares/multer.js");
+
+const { getAllRestaurants, createRestaurant, updateRestaurant, deleteRestaurant } = require("../controllers/restaurantsController");
+
 
 const restaurantRouter = express.Router();
 
-restaurantRouter.get("/api/restaurants", getAllRestaurants); //List all restaurants
-restaurantRouter.get("/api/restaurants/:id", getRestaurantById); //Get restuarant details
 
+restaurantRouter.get("/", getAllRestaurants); //List all restaurants
 
-restaurantRouter.post("/api/restaurants", createRestaurant); //admin
-restaurantRouter.put("/api/restaurants/:id", updateRestaurant); //admin
-restaurantRouter.delete("/api/restaurants/:id", deleteRestaurant); //admin
+restaurantRouter.post("/add", authAdmin, upload.single('image'), createRestaurant); //admin
+restaurantRouter.put("/:id", authAdmin, updateRestaurant); //admin
+restaurantRouter.delete("/:id", authAdmin, deleteRestaurant); //admin
 
-
-module.exports = restaurantRouter
+module.exports = restaurantRouter;
