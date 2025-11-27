@@ -16,7 +16,9 @@ menuRouter.get("/restaurant/:restaurantId", getMenuItemsByRestaurant);
 menuRouter.get("/:id", getMenuItemById);
 
 menuRouter.post("/add", authAdmin, upload.single("image"), createMenuItem);
-menuRouter.put("/:id", authAdmin, updateMenuItem);
+// menuRouter.put("/:id", authAdmin, updateMenuItem);
+menuRouter.put("/:id", authAdmin, upload.single("image"), updateMenuItem);
+
 menuRouter.get("/", authAdmin, getAllMenuItems);
 
 menuRouter.delete("/:id", authAdmin, deleteMenuItem);

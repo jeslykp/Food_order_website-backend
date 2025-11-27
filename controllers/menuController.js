@@ -1,4 +1,5 @@
 const MenuItem = require("../models/menuModel");
+const cloudinary = require("../config/cloudinary");
 
 //     Get all menu items
 //    GET /api/menus
@@ -34,6 +35,13 @@ const getMenuItemById = async (req, res) => {
 const createMenuItem = async (req, res) => {
   try {
     const { name, description, price, category, restaurant } = req.body;
+    let imageUrl = "";
+    if (req.file) {
+      const cloudinaryResponse = await cloudinary.uploader.upload(
+        req.file.path
+      );
+      imageUrl = cloudinaryResponse.secure_url;
+    }
 
     const newMenuItem = new MenuItem({
       name,
@@ -41,6 +49,7 @@ const createMenuItem = async (req, res) => {
       price,
       category,
       restaurant,
+      image: imageUrl,
       createdBy: req.admin.id,
     });
 
@@ -51,7 +60,6 @@ const createMenuItem = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
-
 //     Update menu item
 //    PUT /api/menus/:id
 const updateMenuItem = async (req, res) => {
@@ -59,15 +67,24 @@ const updateMenuItem = async (req, res) => {
     const { name, description, price, category } = req.body;
 
     const menuItem = await MenuItem.findById(req.params.id);
-
     if (!menuItem) {
       return res.status(404).json({ message: "Menu item not found" });
     }
 
+    // Update text fields
     menuItem.name = name || menuItem.name;
     menuItem.description = description || menuItem.description;
     menuItem.price = price || menuItem.price;
     menuItem.category = category || menuItem.category;
+
+    // Update image if uploaded
+    if (req.file) {
+      const cloudinaryResponse = await cloudinary.uploader.upload(
+        req.file.path,
+        { folder: "restaurant_menu", use_filename: true, unique_filename: false }
+      );
+      menuItem.image = cloudinaryResponse.secure_url;
+    }
 
     const updatedMenuItem = await menuItem.save();
     res.status(200).json(updatedMenuItem);
@@ -76,6 +93,7 @@ const updateMenuItem = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
 
 //     Delete menu item
 //    DELETE /api/menus/:id

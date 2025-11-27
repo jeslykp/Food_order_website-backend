@@ -6,12 +6,12 @@ const {
 } = require("../controllers/reviewController");
 const authUser = require("../middlewares/authUser");
 
-const reviewRouter = express.Router();
+const router = express.Router();
 
-reviewRouter.get("/:restaurantId",authUser, getRestaurantReviews);
+router.get("/:restaurantId", getRestaurantReviews);
 
-reviewRouter.post("/:restaurantId", authUser,createReview);
+router.post("/:restaurantId", authUser, createReview);
 
-reviewRouter.delete("/:id",authUser, deleteReview);
+router.delete("/:id", authUser, deleteReview);
 
-module.exports = reviewRouter;
+module.exports = router;

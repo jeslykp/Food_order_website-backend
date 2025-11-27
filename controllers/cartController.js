@@ -143,14 +143,6 @@ const checkout = async (req, res) => {
     if (!cart || cart.items.length === 0) {
       return res.status(400).json({ message: "Cart is empty" });
     }
-
-    // Here you would typically:
-    // 1. Create an order
-    // 2. Process payment
-    // 3. Clear the cart
-    // 4. Return order details
-
-    // For now, just return a success message
     res.status(200).json({
       message: "Checkout successful",
       order: "Order details would be here",
@@ -161,4 +153,36 @@ const checkout = async (req, res) => {
   }
 };
 
-export { addToCart, updateQuantity, removeItem, getCart, checkout };
+const clearCart = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    const cart = await Cart.findOne({ user: userId });
+
+    if (!cart) {
+      return res.status(404).json({ success: false, message: "Cart not found" });
+    }
+
+    // Clear all cart fields
+    cart.items = [];
+    cart.totalAmount = 0;
+    cart.serviceFee = 0;
+    cart.deliveryFee = 0;
+
+    await cart.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Cart cleared successfully",
+    });
+  } catch (error) {
+    console.error("Clear cart error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+      error: error.message,
+    });
+  }
+};
+
+export { addToCart, updateQuantity, removeItem, getCart, checkout ,clearCart};
