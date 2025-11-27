@@ -1,15 +1,15 @@
-const jwt = require(`jsonwebtoken`)
+const jwt = require('jsonwebtoken');
 
-const generateToken = (id,role)=>{
-    console.log(role,"====roleeeeeeeeee")
-    try {
-        const token = jwt.sign({id:id,role:role},process.env.JWT_SECRET_KEY,{expiresIn:`1h`})
-        return token
-    } catch (error) {
-        console.log(error)
-        throw new Error(`token creation failed`,error)
-        
-    }
-}
+const generateToken = (id, role) => {
+  try {
+    const token = jwt.sign({ id, role }, process.env.JWT_SECRET_KEY, {
+      expiresIn: '1h', // token valid for 1 hour
+    });
+    return token;
+  } catch (error) {
+    console.error('Token creation failed:', error);
+    throw new Error('Token creation failed');
+  }
+};
 
-module.exports = generateToken
+module.exports = generateToken;
