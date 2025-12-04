@@ -7,17 +7,17 @@ const addToCart = async (req, res) => {
   try {
     const { menuItemId, quantity } = req.body;
 
-    // Verify menu item exists and populate restaurant
+    // 1. Verify menu item exists and get restaurant
     const menuItem = await MenuItem.findById(menuItemId).populate("restaurant");
     if (!menuItem) {
       return res.status(404).json({ message: "Menu item not found" });
     }
-
     const restaurant = menuItem.restaurant;
 
-    // Find or create cart for user
+    // 2. Find existing cart for user
     let cart = await Cart.findOne({ user: req.user.id });
 
+    // 3. If no cart, create new one
     if (!cart) {
       cart = new Cart({
         user: req.user.id,
@@ -25,12 +25,15 @@ const addToCart = async (req, res) => {
         items: [],
       });
     } else if (cart.restaurant.toString() !== restaurant._id.toString()) {
-      return res.status(400).json({
-        message: "You can only add items from one restaurant at a time",
-      });
+      // 4. If cart exists but from a different restaurant, clear it
+      cart.items = [];
+      cart.restaurant = restaurant._id;
+      cart.totalAmount = 0;
+      cart.serviceFee = 0;
+      cart.deliveryFee = 0;
     }
 
-    // Check if item already in cart
+    // 5. Check if item already exists in cart
     const existingItemIndex = cart.items.findIndex(
       (item) => item.menuItem.toString() === menuItemId
     );
@@ -45,7 +48,7 @@ const addToCart = async (req, res) => {
       });
     }
 
-    // Calculate totals
+    // 6. Calculate totals
     cart.totalAmount = cart.items.reduce(
       (acc, item) => acc + item.price * item.quantity,
       0
@@ -53,7 +56,10 @@ const addToCart = async (req, res) => {
     cart.serviceFee = cart.totalAmount * 0.05;
     cart.deliveryFee = restaurant.deliveryCharge || 0;
 
+    // 7. Save cart
     await cart.save();
+
+    // 8. Return updated cart
     res.status(200).json(cart);
   } catch (error) {
     console.error(error);
@@ -132,8 +138,7 @@ const getCart = async (req, res) => {
   }
 };
 
-//   Checkout cart
-//   POST /api/cart/checkout
+
 const checkout = async (req, res) => {
   try {
     const cart = await Cart.findOne({ user: req.user.id }).populate(
